@@ -14,23 +14,43 @@ module.exports = function(grunt) {
     },
     watch: {
       all: {
-        files: ['**/*.html', '**/*.js'],
+        files: ['**/*.html', '**/*.js', '**/*.less'],
         options: {
           livereload: true
         },
+      },
+      css: {
+        files: ['css/styles.less'],
+        tasks: ['less'],
+        options: {
+          spawn: false,
+        }
       }
     },
     open: {
       all: {
         path: 'http://localhost:<%= express.all.options.port%>'
       }
+    },
+    less: {
+      development: {
+        options: {
+          paths: ['css'],
+          compress: true,
+          sourceMap: true,
+        },
+        files: {
+          'css/styles.css': 'css/styles.less'
+        },
+      }
     }
   });
 
   grunt.registerTask('default', [
-      'express',
-      'open',
-      'watch',
-    ]);
+    'express',
+    'open',
+    'watch',
+    'less',
+  ]);
 
 };
