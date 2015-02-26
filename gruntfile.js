@@ -14,14 +14,14 @@ module.exports = function(grunt) {
     },
     watch: {
       all: {
-        files: ['**/*.html', '**/*.js', '**/*.less'],
+        files: ['**/*.html', '**/*.js', '**/*.sass'],
         options: {
           livereload: true
         },
       },
       css: {
-        files: ['css/styles.less'],
-        tasks: ['less'],
+        files: ['css/main.scss'],
+        tasks: ['sass'],
         options: {
           spawn: false,
         }
@@ -32,16 +32,14 @@ module.exports = function(grunt) {
         path: 'http://localhost:<%= express.all.options.port%>'
       }
     },
-    less: {
-      development: {
+    sass: {
+      dist: {
         options: {
-          paths: ['css'],
-          compress: true,
-          sourceMap: true,
+          style: 'expanded'
         },
         files: {
-          'css/styles.css': 'css/styles.less'
-        },
+          'css/main.css': 'css/main.scss'
+        }
       }
     }
   });
@@ -50,7 +48,7 @@ module.exports = function(grunt) {
     'express',
     'open',
     'watch',
-    'less',
+    'sass',
   ]);
 
 };
