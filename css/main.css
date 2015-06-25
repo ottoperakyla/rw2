@@ -9,16 +9,16 @@ select, button{
 button{
 	margin-top: 10px;
 }
-.redditlist .row{
+.redditlist .listing{
 	max-height: 400px;
 	overflow: scroll;
 }
 .redditlist>table>tbody>tr>td {
 	border: 1px solid #ddd;
 }
-#show-controls{
-	display: none;
-}
 input {
 	margin-bottom: 10px;
+}
+.remove-reddit{
+	color: #f00;
 }

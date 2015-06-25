@@ -9,8 +9,10 @@
 	$watchList = $('#watchList'),
 	after = '',
 	loading = false,
+	activeReddits = [],
+	controlsShowing = true,
 
-	addRedditsToListing = function (after) {
+	updateRedditListing = function (after) {
 		var deferred = jQuery.Deferred(),
 		url = after ? REDDITS_PATH + '?after=' + after : REDDITS_PATH
 
@@ -51,24 +53,33 @@
 
 	addGetRedditsListener = function () {
 		$('#getReddits').click(function () {
-			if ($watchList.children().size() < 1) return;
-
-			addReddits($watchList.children())
-			$("#controls").slideUp()
-			$("#show-controls").show()
-			
+			addReddits($watchList.children())		
+			toggleControls()	
 		})
 	},
 
 	addReddits = function (reddits) {
-		var posts = []
+		if ($watchList.children().size() < 1) return
+
+			var posts = []
 
 		reddits.each(function (i, reddit) {
-			getRedditPosts(reddit.value).then(function (redditData) {
-				$('body').append(redditTemplate({title: redditData.title, posts: redditData.posts}))
-			})
-			
+
+			if (activeReddits.indexOf(reddit.value) === -1) {
+				getRedditPosts(reddit.value).then(function (redditData) {
+					activeReddits.push(redditData.title)
+
+					$('body').append(redditTemplate({title: redditData.title, posts: redditData.posts}))
+				})
+			} 
+
 		})
+
+		//toggleControls()
+		/*
+		$("#controls").slideUp()
+		$("#show-controls").show()
+		*/
 	},
 
 	getRedditPosts = function(reddit) {
@@ -95,10 +106,15 @@
 		return deferred.promise()
 	},
 
+	toggleControls = function () {
+		controlsShowing = !controlsShowing
+		$("#show-controls").text(controlsShowing ? 'Hide controls' : 'Show Controls')
+		$("#controls").slideToggle()
+	},
+
 	addShowControlsListener = function () {
 		$("#show-controls").click(function () {
-			$(this).hide()
-			$("#controls").slideDown()
+			toggleControls()
 		})
 	},
 
@@ -140,7 +156,7 @@
 			scrollFinished = (this.scrollHeight - this.scrollTop) === this.clientHeight
 
 			if (scrollFinished) {
-				addRedditsToListing(after).then(function (afterUrl) {
+				updateRedditListing(after).then(function (afterUrl) {
 					after = afterUrl
 				})
 			}
@@ -219,13 +235,30 @@
 			$watchList.append(listItemTemplate({value: reddit, text: getRedditString(reddit)}))
 		})
 
+		addReddits($watchList.children())
+		toggleControls()
+	},
+
+	addRemoveRedditListener = function () {
+		$('body').click(function (event) {
+			var $target = $(event.target)
+			if ($target.hasClass('remove-reddit')) {
+				console.log('remove', $target.attr('data-reddit'))
+			}
+		})
+	},
+
+	addRefreshListener = function () {
+		$("#refresh").click(function () {
+			window.location.reload()
+		})
 	},
 
 	init = function () {
 		getTemplate('listItem').then(function (template) {
 			listItemTemplate = template
 
-			addRedditsToListing().then(function (afterUrl) {
+			updateRedditListing().then(function (afterUrl) {
 				after = afterUrl
 				addRedditListScrollListener()
 
@@ -241,6 +274,8 @@
 		addRemoveRedditsListener()
 		addRedditAddListener()
 		addSaveRedditsListener()
+		addRemoveRedditListener()
+		addRefreshListener()
 
 		getTemplate('reddit')
 		.then(function (template) {
@@ -249,7 +284,7 @@
 			addGetRedditsListener()
 		})
 
-		setRedditsRefreshTimer()
+		//setRedditsRefreshTimer()
 		pollLoadingSpinner()
 	}
 

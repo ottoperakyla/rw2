@@ -1,6 +1,6 @@
 <div data-reddit="{{title}}" class="col-md-4 text-center redditlist">
-	<h2>{{title}}</h2>
-	<div class="row">
+	<h2>{{title}} [<a class="remove-reddit" data-reddit="{{title}}" href="#">x</a>]</h2>
+	<div class="listing row">
 		<div class="col-md-12">
 			<table class="table table-striped">
 				<tr>
@@ -17,5 +17,12 @@
 				{{/each}}
 			</table>
 		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-6"><button class="btn btn-primary form-control">&laquo;</button></div>
+		<div class="col-md-6"><button class="btn btn-primary form-control">&raquo;</button></div>
+	</div>
+	<div class="row">
+		<div class="col-md-12"><button class="btn btn-success form-control">Open all</button></div>
 	</div>
 </div>
