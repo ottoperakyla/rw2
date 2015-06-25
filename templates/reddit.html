@@ -1,17 +1,21 @@
 <div class="col-md-4 text-center redditlist">
 	<h2>{{title}}</h2>
-	<table class="table table-striped">
-		<tr>
-			<th>title</th>
-			<th>comments</th>
-			<th>score</th>
-		</tr>
-		{{#each posts}}
-		<tr>
-			<td><a href="{{url}}">{{title}}</a></td>
-			<td><a href="{{permalink}}">comments</a></td>
-			<td>{{score}}</td>
-		</tr>
-		{{/each}}
-	</table>
+	<div class="row">
+		<div class="col-md-12">
+			<table class="table table-striped">
+				<tr>
+					<th>title</th>
+					<th>comments</th>
+					<th>score</th>
+				</tr>
+				{{#each posts}}
+				<tr>
+					<td><a href="{{url}}">{{title}}</a></td>
+					<td><a href="{{permalink}}">comments</a></td>
+					<td>{{score}}</td>
+				</tr>
+				{{/each}}
+			</table>
+		</div>
+	</div>
 </div>

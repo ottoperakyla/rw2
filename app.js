@@ -1,29 +1,43 @@
-var app = (function () {
-	var app = {}
+(function () {
 
-	var API_PATHS = {
-		SUBREDDIT: 'http://www.reddit.com/r/'
-	}
+	var SUBREDDIT_PATH = 'http://www.reddit.com/r/',
+			REDDITS_PATH = 'http://www.reddit.com/subreddits/popular.json',
+			CONFIRM_DELETE = 'Are you sure?',
+			redditTemplate = null,
+			listItemTemplate = null,
+			$redditList = $('#redditList'),
+			$watchList = $('#watchList'),
+			after = '',
 
-	var APP_MESSAGES = {
-		CONFIRM_DELETE: 'Are you sure?'
-	}
+	addRedditsToListing = function (after) {
+		var deferred = jQuery.Deferred(),
+				url = after ? REDDITS_PATH + '?after=' + after : REDDITS_PATH
 
-	var $redditList = $('#redditList')
-	var $watchList = $('#watchList')
+		console.log('loading', url)
 
-	var redditTemplate = null
+		$.get(url, function (json) {
+			var reddits = json.data.children
 
-	var addListButtonListener = function () {
+			reddits.forEach(function (reddit) {
+				var details = reddit.data
+				console.log(details)
+				$redditList.append(listItemTemplate({value: details.display_name, text: details.url}))
+			})
+	
+			deferred.resolve(json.data.after)
+		})
+
+		return deferred.promise()
+	},
+			
+	addListButtonListener = function () {
 		$('button.list-control').click(function (event) {
-			var id = event.target.id
-
-			var listToAdd = {
-				add: $watchList,
-				remove: $redditList
-			}
-
-			var getFrom = id === 'add' ? 'remove' : 'add'
+			var id = event.target.id,
+					getFrom = id === 'add' ? 'remove' : 'add',
+					listToAdd = {
+						add: $watchList,
+						remove: $redditList
+					}
 
 			listToAdd[getFrom].children().each(function (i, reddit) {
 				if (reddit.selected) {
@@ -32,22 +46,20 @@ var app = (function () {
 			})
 
 		})
-	}
+	},
 
-	var addGetRedditsListener = function () {
-
+	addGetRedditsListener = function () {
 		$('#getReddits').click(function () {
-			if ($watchList.children().size() === 0) return;
+			if ($watchList.children().size() < 1) return;
 
 			addReddits($watchList.children())
 			$("#controls").slideUp()
 			$("#show-controls").show()
 			
 		})
+	},
 
-	}
-
-	var addReddits = function (reddits) {
+	addReddits = function (reddits) {
 		var posts = []
 
 		reddits.each(function (i, reddit) {
@@ -56,14 +68,14 @@ var app = (function () {
 			})
 			
 		})
-	}
+	},
 
-	var getRedditPosts = function(reddit) {
+	getRedditPosts = function(reddit) {
 		var deferred = jQuery.Deferred()
 
-		$.get(API_PATHS.SUBREDDIT + reddit + '.json', function (json) {
+		$.get(SUBREDDIT_PATH + reddit + '.json', function (json) {
 			var postsData = json.data.children,
-			posts = []
+					posts = []
 
 			postsData.forEach(function (post) {
 				var details = post.data
@@ -80,21 +92,21 @@ var app = (function () {
 		})
 
 		return deferred.promise()
-	}
+	},
 
-	var addShowControlsListener = function () {
+	addShowControlsListener = function () {
 		$("#show-controls").click(function () {
 			$(this).hide()
 			$("#controls").slideDown()
 		})
-	}
+	},
 
-	var addRemoveRedditsListener = function () {
+	addRemoveRedditsListener = function () {
 		$('#removeReddits').click(function () {
 
-			if ($watchList.children().size() === 0) return;
+			if ($watchList.children().size() < 1) return;
 
-			if (confirm(APP_MESSAGES.CONFIRM_DELETE)) {
+			if (confirm(CONFIRM_DELETE)) {
 				$watchList.children().each(function (i, reddit) {
 					$redditList.append(reddit)
 				})
@@ -102,14 +114,14 @@ var app = (function () {
 				$('.redditlist').remove()
 			}
 		})
-	}
+	},
 
-	var getRedditString = function (string) {
+	getRedditString = function (string) {
 		var ret = string.indexOf('/r/') === - 1 ? '/r/' + string : string
 		return !/\/$/.test(ret) ? ret + '/' : ret
-	}
+	},
 
-	var addRedditAddListener = function () {
+	addRedditAddListener = function () {
 		$('#add-reddit').keydown(function (event) {
 			if (event.keyCode === 13) {
 				var that = this
@@ -118,47 +130,57 @@ var app = (function () {
 				})
 			}	
 		})
+	},
+
+	addRedditListScrollListener = function () {
+		var scrollFinished = false
+
+		$redditList.scroll(function (event) {
+			scrollFinished = (this.scrollHeight - this.scrollTop) === this.clientHeight
+
+			if (scrollFinished) {
+				addRedditsToListing(after).then(function (afterUrl) {
+					after = afterUrl
+				})
+			}
+
+		})
+	},
+
+	getTemplate = function (template) {
+		var deferred = jQuery.Deferred()
+
+		$.get('templates/' + template + '.html', function (raw) {
+			deferred.resolve(Handlebars.compile(raw))
+		})
+
+		return deferred.promise()
+	},
+
+	init = function () {
+		getTemplate('listItem').then(function (template) {
+			listItemTemplate = template
+
+			addRedditsToListing().then(function (afterUrl) {
+				after = afterUrl
+				addRedditListScrollListener()
+			})
+
+		})
+		
+		addListButtonListener()
+		addShowControlsListener()
+		addRemoveRedditsListener()
+		addRedditAddListener()
+
+		getTemplate('reddit')
+		.then(function (template) {
+			console.log(template)
+			redditTemplate = template
+			addGetRedditsListener()
+		})
 	}
 
-/*
-["domain", "banned_by", "media_embed", "subreddit", "selftext_html", "selftext", "likes", 
-"suggested_sort", "user_reports", "secure_media", "link_flair_text", "id", "from_kind", "gilded", 
-"archived", "clicked", "report_reasons", "author", "media", "score", "approved_by", "over_18", "hidden",
- "num_comments", "thumbnail", "subreddit_id", "edited", "link_flair_css_class", "author_flair_css_class",
-  "downs", "secure_media_embed", "saved", "removal_reason", "stickied", "from", "is_self", "from_id",
-   "permalink", "name", "created", "url", "author_flair_text", "title", "created_utc", "distinguished",
-    "mod_reports", "visited", "num_reports", "ups"]
-    */
+	init()
 
-    var getTemplate = function (template) {
-    	var deferred = jQuery.Deferred()
-
-    	$.get('templates/' + template + '.html', function (raw) {
-    		deferred.resolve(Handlebars.compile(raw))
-    	})
-
-    	return deferred.promise()
-    }
-
-    app.init = function () {
-
-    	addListButtonListener()
-    	addShowControlsListener()
-    	addRemoveRedditsListener()
-    	addRedditAddListener()
-
-    	getTemplate('reddit')
-    	.then(function (template) {
-    		console.log(template)
-    		redditTemplate = template
-    		addGetRedditsListener()
-    	})
-
-    	console.log('test')
-
-    }
-
-    return app
-  }())
-
-app.init()
+}())

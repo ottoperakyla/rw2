@@ -9,7 +9,7 @@ select, button{
 button{
 	margin-top: 10px;
 }
-.redditlist{
+.redditlist .row{
 	max-height: 400px;
 	overflow: scroll;
 }
