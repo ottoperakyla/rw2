@@ -2,7 +2,7 @@
 	<h2>{{title}} [<a class="remove-reddit" data-reddit="{{title}}" href="#">x</a>]</h2>
 	<div class="listing row">
 		<div class="col-md-12">
-			<table class="table table-striped">
+			<table class="table table-striped {{title}}-reddit-table">
 				<tr>
 					<th>title</th>
 					<th>comments</th>
@@ -10,8 +10,8 @@
 				</tr>
 				{{#each posts}}
 				<tr>
-					<td><a href="{{url}}">{{title}}</a></td>
-					<td><a href="{{permalink}}">comments</a></td>
+					<td><a target="_blank" class="url" href="{{url}}">{{title}}</a></td>
+					<td><a target="_blank" href="http://www.reddit.com{{permalink}}">comments</a></td>
 					<td>{{score}}</td>
 				</tr>
 				{{/each}}
@@ -23,6 +23,6 @@
 		<div class="col-md-6"><button class="btn btn-primary form-control">&raquo;</button></div>
 	</div>
 	<div class="row">
-		<div class="col-md-12"><button class="btn btn-success form-control">Open all</button></div>
+		<div class="col-md-12"><button data-reddit="{{title}}" class="btn btn-success form-control open-all">Open all</button></div>
 	</div>
 </div>

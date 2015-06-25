@@ -3,6 +3,7 @@
 	var SUBREDDIT_PATH = 'http://www.reddit.com/r/',
 	REDDITS_PATH = 'http://www.reddit.com/subreddits/popular.json',
 	CONFIRM_DELETE = 'Are you sure?',
+	CONFIRM_OPEN_ALL = 'Are you sure? This will open a lot of tabs',
 	redditTemplate = null,
 	listItemTemplate = null,
 	$redditList = $('#redditList'),
@@ -239,11 +240,17 @@
 		toggleControls()
 	},
 
-	addRemoveRedditListener = function () {
+	addGenericListeners = function () {
 		$('body').click(function (event) {
 			var $target = $(event.target)
 			if ($target.hasClass('remove-reddit')) {
 				console.log('remove', $target.attr('data-reddit'))
+			}
+			if ($target.hasClass('open-all') && confirm(CONFIRM_OPEN_ALL)) {
+				$target.closest('.redditlist').find('table').find('a.url').each(function(i, url) {
+					var win = window.open(url, '_blank')
+					win.focus()
+				})
 			}
 		})
 	},
@@ -274,7 +281,7 @@
 		addRemoveRedditsListener()
 		addRedditAddListener()
 		addSaveRedditsListener()
-		addRemoveRedditListener()
+		addGenericListeners()
 		addRefreshListener()
 
 		getTemplate('reddit')
@@ -285,7 +292,7 @@
 		})
 
 		//setRedditsRefreshTimer()
-		pollLoadingSpinner()
+		//pollLoadingSpinner()
 	}
 
 	init()
