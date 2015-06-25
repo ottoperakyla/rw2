@@ -3,8 +3,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="initial-scale=1">
-	<title>Page Title</title>
-	<script data-main="scripts/main" src="scripts/require.js"></script>
+	<title>Reddit Watcher</title>
 	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="css/main.css" />
 </head>
@@ -13,10 +12,67 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12 text-center">
-				<h1 style="font-family:'Comic Sans MS',sans-serif;color:hotpink;">Hi! I am your new project.</h1>
+				<h1>Reddit Watcher</h1>
+				<p><span id="show-controls"><a href="#">Show controls</a></span></p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-offset-3 col-md-6">
+				<div class="col-md-offset-2 col-md-8" id="controls">
+					<div class="row">
+						<div class="col-md-6">
+							<select class="form-control" multiple name="redditList" id="redditList">
+								<option value="gadgets">/r/gadgets/</option>
+								<option value="sports">/r/sports/</option>
+								<option value="gaming">/r/gaming/</option>
+								<option value="pics">/r/pics/</option>
+								<option value="worldnews">/r/worldnews/</option>
+								<option value="videos">/r/videos/</option>
+								<option value="AskReddit">/r/AskReddit/</option>
+								<option value="aww">/r/aww/</option>
+								<option value="Music">/r/Music/</option>
+								<option value="funny">/r/funny/</option>
+								<option value="news">/r/news/</option>
+								<option value="movies">/r/movies/</option>
+								<option value="books">/r/books/</option>
+								<option value="europe">/r/europe/</option>
+								<option value="history">/r/history/</option>
+								<option value="food">/r/food/</option>
+								<option value="philosophy">/r/philosophy/</option>
+								<option value="television">/r/television/</option>
+								<option value="Jokes">/r/Jokes/</option>
+								<option value="Art">/r/Art/</option>
+								<option value="DIY">/r/DIY/</option>
+								<option value="space">/r/space/</option>
+								<option value="Documentaries">/r/Documentaries/</option>
+								<option value="Fitness">/r/Fitness/</option>
+								<option value="Suomi">/r/Suomi/</option>
+							</select>
+							<button id="add" class="list-control form-control btn btn-primary">&raquo;</button>
+						</div>
+						<div class="col-md-6">
+							<select class="form-control" multiple name="watchList" id="watchList">
+							</select>
+							<button id="remove" class="list-control form-control btn btn-primary">&laquo;</button>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<button id="getReddits" class="form-control btn btn-primary">Get reddits</button>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<button id="removeReddits" class="form-control btn btn-danger">Remove reddits</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 
+	<script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+	<script type="text/javascript" src="bower_components/handlebars/handlebars.js"></script>
+	<script type="text/javascript" src="app.js"></script>
 </body>
 </html>

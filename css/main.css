@@ -1,0 +1,21 @@
+select {
+	width: 150px;
+	min-height: 400px;
+}
+select, button{
+	display: block !important;
+	margin: auto;
+}
+button{
+	margin-top: 10px;
+}
+.redditlist{
+	max-height: 400px;
+	overflow: scroll;
+}
+.redditlist>table>tbody>tr>td {
+	border: 1px solid #ddd;
+}
+#show-controls{
+	display: none;
+}

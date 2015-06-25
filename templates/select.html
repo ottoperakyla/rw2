@@ -1,0 +1,5 @@
+<select multiple name="redditList" id="redditList">
+	{{#each reddits}}
+	<option value="{{data.display_name}}">{{data.url}}</option>
+	{{/each}}
+</select>
