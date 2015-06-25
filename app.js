@@ -154,6 +154,8 @@ var app = (function () {
     		addGetRedditsListener()
     	})
 
+    	console.log('test')
+
     }
 
     return app
