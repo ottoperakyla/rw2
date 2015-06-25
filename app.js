@@ -1,17 +1,18 @@
 (function () {
 
 	var SUBREDDIT_PATH = 'http://www.reddit.com/r/',
-			REDDITS_PATH = 'http://www.reddit.com/subreddits/popular.json',
-			CONFIRM_DELETE = 'Are you sure?',
-			redditTemplate = null,
-			listItemTemplate = null,
-			$redditList = $('#redditList'),
-			$watchList = $('#watchList'),
-			after = '',
+	REDDITS_PATH = 'http://www.reddit.com/subreddits/popular.json',
+	CONFIRM_DELETE = 'Are you sure?',
+	redditTemplate = null,
+	listItemTemplate = null,
+	$redditList = $('#redditList'),
+	$watchList = $('#watchList'),
+	after = '',
+	loading = false,
 
 	addRedditsToListing = function (after) {
 		var deferred = jQuery.Deferred(),
-				url = after ? REDDITS_PATH + '?after=' + after : REDDITS_PATH
+		url = after ? REDDITS_PATH + '?after=' + after : REDDITS_PATH
 
 		console.log('loading', url)
 
@@ -20,24 +21,24 @@
 
 			reddits.forEach(function (reddit) {
 				var details = reddit.data
-				console.log(details)
-				$redditList.append(listItemTemplate({value: details.display_name, text: details.url}))
-			})
-	
+		//		console.log(details)
+		$redditList.append(listItemTemplate({value: details.display_name, text: details.url}))
+	})
+
 			deferred.resolve(json.data.after)
 		})
 
 		return deferred.promise()
 	},
-			
+
 	addListButtonListener = function () {
 		$('button.list-control').click(function (event) {
 			var id = event.target.id,
-					getFrom = id === 'add' ? 'remove' : 'add',
-					listToAdd = {
-						add: $watchList,
-						remove: $redditList
-					}
+			getFrom = id === 'add' ? 'remove' : 'add',
+			listToAdd = {
+				add: $watchList,
+				remove: $redditList
+			}
 
 			listToAdd[getFrom].children().each(function (i, reddit) {
 				if (reddit.selected) {
@@ -75,7 +76,7 @@
 
 		$.get(SUBREDDIT_PATH + reddit + '.json', function (json) {
 			var postsData = json.data.children,
-					posts = []
+			posts = []
 
 			postsData.forEach(function (post) {
 				var details = post.data
@@ -157,6 +158,69 @@
 		return deferred.promise()
 	},
 
+	setRedditsRefreshTimer = function () {
+
+		setInterval(function () {
+			loading = true
+
+			$('.redditlist').each(function (i, redditList) {
+				var reddit = $(redditList).attr('data-reddit'),
+				$redditList = $(redditList)
+
+				getRedditPosts(reddit).then(function (redditData) {
+					$redditList.replaceWith(redditTemplate({title: redditData.title, posts: redditData.posts}))
+					loading = false
+				})
+
+			})
+		}, 1000 * 5)
+
+	},
+
+	addSaveRedditsListener = function () {
+		$("#saveReddits").click(function () {
+			if ($watchList.children().size() < 1) {
+				localStorage.removeItem('reddits')
+				return
+			}
+
+			var redditsToSave = []
+
+			$watchList.children().each(function (i, reddit) {
+				redditsToSave.push(reddit.value)
+			})
+
+			localStorage.reddits = JSON.stringify(redditsToSave)
+		})
+	},
+
+	showLoadingSpinner = function () {
+		//todo: do this
+	},
+
+	pollLoadingSpinner = function () {
+		setInterval(function () {
+			if (loading) {
+				showLoadingSpinner()
+			}
+		}, 500)
+	},
+
+	addSavedReddits = function (savedReddits) {
+		var reddits = JSON.parse(savedReddits)
+
+		reddits.forEach(function(reddit) {
+			$redditList.children().each(function(i, breddit) {
+				if (breddit.value === reddit) {
+					$(breddit).remove()
+				}
+			})
+
+			$watchList.append(listItemTemplate({value: reddit, text: getRedditString(reddit)}))
+		})
+
+	},
+
 	init = function () {
 		getTemplate('listItem').then(function (template) {
 			listItemTemplate = template
@@ -164,6 +228,10 @@
 			addRedditsToListing().then(function (afterUrl) {
 				after = afterUrl
 				addRedditListScrollListener()
+
+				if (localStorage.reddits) {
+					addSavedReddits(localStorage.reddits)
+				}
 			})
 
 		})
@@ -172,6 +240,7 @@
 		addShowControlsListener()
 		addRemoveRedditsListener()
 		addRedditAddListener()
+		addSaveRedditsListener()
 
 		getTemplate('reddit')
 		.then(function (template) {
@@ -179,6 +248,9 @@
 			redditTemplate = template
 			addGetRedditsListener()
 		})
+
+		setRedditsRefreshTimer()
+		pollLoadingSpinner()
 	}
 
 	init()
