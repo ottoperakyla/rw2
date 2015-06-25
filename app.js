@@ -104,6 +104,22 @@ var app = (function () {
 		})
 	}
 
+	var getRedditString = function (string) {
+		var ret = string.indexOf('/r/') === - 1 ? '/r/' + string : string
+		return !/\/$/.test(ret) ? ret + '/' : ret
+	}
+
+	var addRedditAddListener = function () {
+		$('#add-reddit').keydown(function (event) {
+			if (event.keyCode === 13) {
+				var that = this
+				getTemplate('listItem').then(function (template) {
+					$watchList.append(template({value: that.value, text: getRedditString(that.value)}))
+				})
+			}	
+		})
+	}
+
 /*
 ["domain", "banned_by", "media_embed", "subreddit", "selftext_html", "selftext", "likes", 
 "suggested_sort", "user_reports", "secure_media", "link_flair_text", "id", "from_kind", "gilded", 
@@ -114,10 +130,10 @@ var app = (function () {
     "mod_reports", "visited", "num_reports", "ups"]
     */
 
-    var getRedditTemplate = function () {
+    var getTemplate = function (template) {
     	var deferred = jQuery.Deferred()
 
-    	$.get('templates/reddit.html', function (raw) {
+    	$.get('templates/' + template + '.html', function (raw) {
     		deferred.resolve(Handlebars.compile(raw))
     	})
 
@@ -129,8 +145,9 @@ var app = (function () {
     	addListButtonListener()
     	addShowControlsListener()
     	addRemoveRedditsListener()
+    	addRedditAddListener()
 
-    	getRedditTemplate()
+    	getTemplate('reddit')
     	.then(function (template) {
     		console.log(template)
     		redditTemplate = template

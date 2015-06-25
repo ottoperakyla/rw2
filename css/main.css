@@ -19,3 +19,6 @@ button{
 #show-controls{
 	display: none;
 }
+input {
+	margin-bottom: 10px;
+}
