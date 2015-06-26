@@ -130,6 +130,7 @@
 				})
 
 				$('.redditlist').remove()
+				activeReddits = []
 			}
 		})
 	},
@@ -255,6 +256,44 @@
 		})
 	},
 
+	pollSortAll = function () {
+		setInterval(function() {
+			$("#sort-all-wrapper")[activeReddits.length > 0 ? 'show' : 'hide']()
+		}, 500)
+	},
+
+	sortSingleReddit = function (reddit, sortBy) {
+		console.log(reddit, sortBy)
+	},
+
+	getRedditFromSortString = function (sortString) {
+		return sortString.split("sort-")[1]
+	},
+
+	sortAllReddits = function () {
+		$('.sort-by').each(function (i, el) {
+			sortSingleReddit(getRedditFromSortString(el.name), el.value)
+		})
+	},
+
+	addSortAllListener = function () {
+		$('#sort-all').change(function () {
+			var that = this
+			$('.sort-by').each(function(i, el) {
+				el.value = that.value
+			})
+			sortAllReddits()
+		})
+	},
+
+	addSortSingleListener = function () {
+		$(document).change(function (event) {
+			if ($(event.target).hasClass('sort-by')) {
+				sortSingleReddit(getRedditFromSortString(event.target.name), event.target.value)
+			}
+		})
+	}
+
 	addRefreshListener = function () {
 		$("#refresh").click(function () {
 			window.location.reload()
@@ -290,6 +329,10 @@
 			redditTemplate = template
 			addGetRedditsListener()
 		})
+
+		pollSortAll()
+		addSortAllListener()
+		addSortSingleListener()
 
 		//setRedditsRefreshTimer()
 		//pollLoadingSpinner()

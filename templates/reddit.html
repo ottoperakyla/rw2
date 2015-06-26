@@ -1,5 +1,11 @@
 <div data-reddit="{{title}}" class="col-md-4 text-center redditlist">
 	<h2>{{title}} [<a class="remove-reddit" data-reddit="{{title}}" href="#">x</a>]</h2>
+	<h3>Sort by</h3>
+	<select class="form-control sort-by" name="sort-{{title}}" id="sort-{{title}}">
+		<option value="hot">Hot</option>
+		<option value="new">New</option>
+		<option value="top">Top</option>
+	</select>
 	<div class="listing row">
 		<div class="col-md-12">
 			<table class="table table-striped {{title}}-reddit-table">

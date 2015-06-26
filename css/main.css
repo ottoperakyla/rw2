@@ -1,6 +1,8 @@
-select {
-	width: 150px;
+select.list {
 	min-height: 400px;
+}
+select.sort-by{
+	margin: 10px 0;
 }
 select, button{
 	display: block !important;
@@ -21,4 +23,7 @@ input {
 }
 .remove-reddit{
 	color: #f00;
+}
+#sort-all-wrapper{
+	display: none;
 }

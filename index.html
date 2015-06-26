@@ -26,12 +26,12 @@
 					</div>
 					<div class="row">
 						<div class="col-md-6">
-							<select class="form-control" multiple name="redditList" id="redditList">
+							<select class="form-control list" multiple name="redditList" id="redditList">
 							</select>
 							<button id="add" class="list-control form-control btn btn-primary">&raquo;</button>
 						</div>
 						<div class="col-md-6">
-							<select class="form-control" multiple name="watchList" id="watchList">
+							<select class="form-control list" multiple name="watchList" id="watchList">
 							</select>
 							<button id="remove" class="list-control form-control btn btn-primary">&laquo;</button>
 						</div>
@@ -57,6 +57,16 @@
 						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div id="sort-all-wrapper" class="row text-center">
+			<div class="col-md-12">
+				<h3>Sort all by</h3>
+				<select class="form-control sort-by-all" name="sort-all" id="sort-all">
+					<option value="hot">Hot</option>
+					<option value="new">New</option>
+					<option value="top">Top</option>
+				</select>
 			</div>
 		</div>
 	</div>
